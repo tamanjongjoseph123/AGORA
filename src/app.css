@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-agora-purple: #7B2CBF;
+  --color-agora-orange: #FF6B35;
+  --color-agora-red: #D62828;
+  --color-agora-dark: #1a1a1a;
+  --color-agora-light: #f8f8f8;
+  
+  --font-family-sans: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'system-ui', 'sans-serif';
+}
