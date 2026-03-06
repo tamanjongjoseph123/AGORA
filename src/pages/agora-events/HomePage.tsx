@@ -1,10 +1,8 @@
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { projects } from '../../data/projects';
 import { Sparkles, Users, Target, Building, Trophy } from 'lucide-react';
 
 export function HomePage() {
-  const { t } = useTranslation();
 
   const featuredProjects = projects.slice(0, 3);
   const ongoingProjects = projects.filter(p => p.status === 'ongoing');
@@ -14,22 +12,18 @@ export function HomePage() {
       {/* Hero Section */}
       <section className="bg-agora-gradient text-white min-h-screen flex items-center justify-center">
         <div className="container-base section-padding text-center">
-          <div className="animate-fadeInUp">
-            <img
-              src="/images/AGORA LOGO.jpeg"
-              alt="AGORA Logo"
-              className="h-32 w-auto mx-auto mb-8"
-            />
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
-              AGORA Events
-            </h1>
-            <p className="text-2xl md:text-3xl font-semibold mb-4 opacity-90">
-              Building Platforms. Creating Opportunities. Elevating Youth.
-            </p>
-            <p className="text-lg md:text-xl max-w-4xl mx-auto mb-12 opacity-85">
-              AGORA Events is a youth-focused event organization dedicated to building structured platforms for talent development, competition, and opportunity. We design experiences that combine sport, innovation, and community impact.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="animate-fadeInUp max-w-6xl mx-auto">
+            <div className="relative mb-6">
+              <img
+                src="/images/AGORA LOGO.jpeg"
+                alt="AGORA Logo"
+                className="h-48 w-auto mx-auto animate-logo-float"
+              />
+              <div className="absolute inset-0 h-48 w-auto mx-auto animate-logo-glow">
+                <div className="w-full h-full bg-agora-orange opacity-20 blur-xl rounded-full"></div>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-delay">
               <Link to="/projects" className="btn-primary">
                 Discover Our Projects
               </Link>
@@ -42,7 +36,7 @@ export function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-gray-50 section-padding">
+      <section className="bg-gray-50 py-12">
         <div className="container-base">
           <div className="grid md:grid-cols-4 gap-6">
             <div className="card-base p-6 text-center">
@@ -70,7 +64,7 @@ export function HomePage() {
       </section>
 
       {/* About AGORA Section */}
-      <section className="section-padding bg-white">
+      <section className="py-12 bg-white">
         <div className="container-base">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
@@ -111,9 +105,9 @@ export function HomePage() {
       </section>
 
       {/* Featured Projects */}
-      <section className="section-padding bg-gray-50">
+      <section className="py-12 bg-gray-50">
         <div className="container-base">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-4xl font-bold mb-4">Our Projects & Events</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               AGORA Events develops and manages structured youth initiatives across multiple sectors. Below are our current and past projects.
@@ -162,7 +156,7 @@ export function HomePage() {
             ))}
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-8">
             <Link to="/projects" className="btn-primary">
               View All Projects
             </Link>
@@ -171,9 +165,9 @@ export function HomePage() {
       </section>
 
       {/* Partners Preview */}
-      <section className="section-padding bg-white">
+      <section className="py-12 bg-white">
         <div className="container-base">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-4xl font-bold mb-4">Partners & Sponsors</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               We collaborate with institutions, brands, and organizations that believe in youth empowerment and structured opportunity.
@@ -201,7 +195,7 @@ export function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-agora-gradient-reverse text-white section-padding">
+      <section className="bg-agora-gradient-reverse text-white py-12">
         <div className="container-base text-center">
           <h2 className="text-4xl font-bold mb-4">
             Ready to Create Impact Together?

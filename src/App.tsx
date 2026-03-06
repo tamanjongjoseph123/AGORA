@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 // AGORA Events Pages
 import { HomePage } from './pages/agora-events/HomePage';
@@ -20,35 +22,49 @@ import { PrizesPage } from './pages/circuit/PrizesPage';
 import { DashboardPage } from './pages/circuit/DashboardPage';
 import { QRLandingPage } from './pages/circuit/QRLandingPage';
 
+// Admin Pages
+import { AdminLoginPage } from './pages/admin/LoginPage';
+import { AdminDashboardPage } from './pages/admin/DashboardPage';
+
 function App() {
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow">
-          <Routes>
-            {/* AGORA Events Routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/projects" element={<ProjectsPage />} />
-            <Route path="/partners" element={<PartnersPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/faq" element={<FAQPage />} />
+    <AuthProvider>
+      <Router>
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-grow">
+            <Routes>
+              {/* AGORA Events Routes */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/partners" element={<PartnersPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/faq" element={<FAQPage />} />
 
-            {/* AGORA Circuit Routes */}
-            <Route path="/circuit" element={<CircuitHomePage />} />
-            <Route path="/circuit/rankings" element={<RankingsPage />} />
-            <Route path="/circuit/schedule" element={<SchedulePage />} />
-            <Route path="/circuit/register" element={<RegisterPage />} />
-            <Route path="/circuit/rules" element={<RulesPage />} />
-            <Route path="/circuit/prizes" element={<PrizesPage />} />
-            <Route path="/circuit/dashboard" element={<DashboardPage />} />
-            <Route path="/circuit/qr" element={<QRLandingPage />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+              {/* AGORA Circuit Routes */}
+              <Route path="/circuit" element={<CircuitHomePage />} />
+              <Route path="/circuit/rankings" element={<RankingsPage />} />
+              <Route path="/circuit/schedule" element={<SchedulePage />} />
+              <Route path="/circuit/register" element={<RegisterPage />} />
+              <Route path="/circuit/rules" element={<RulesPage />} />
+              <Route path="/circuit/prizes" element={<PrizesPage />} />
+              <Route path="/circuit/dashboard" element={<DashboardPage />} />
+              <Route path="/circuit/qr" element={<QRLandingPage />} />
+
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route path="/admin/dashboard" element={
+                <ProtectedRoute>
+                  <AdminDashboardPage />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

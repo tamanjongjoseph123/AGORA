@@ -55,21 +55,21 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Mail size={18} className="text-agora-orange" />
-                <a href="mailto:info@agoraevents.com" className="text-gray-400 hover:text-agora-orange">
-                  info@agoraevents.com
+                <a href="mailto:Contact@agoraevents.tech" className="text-gray-400 hover:text-agora-orange">
+                  Contact@agoraevents.tech
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <Phone size={18} className="text-agora-orange" />
-                <a href="tel:+1234567890" className="text-gray-400 hover:text-agora-orange">
-                  +1 (234) 567-890
+                <a href="tel:+237694895224" className="text-gray-400 hover:text-agora-orange">
+                  +237 694 895 224
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <MessageCircle size={18} className="text-agora-orange" />
-                <a href="https://wa.me/1234567890" className="text-gray-400 hover:text-agora-orange">
-                  WhatsApp
-                </a>
+                <span className="text-gray-400">
+                  Denver, Bonamoussadi, Douala
+                </span>
               </div>
             </div>
           </div>

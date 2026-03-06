@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, Globe } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { Menu, X, Globe, Shield } from 'lucide-react';
 
 export function Header() {
   const { t, i18n } = useTranslation();
+  const { isAdmin } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const isCircuit = location.pathname.includes('/circuit');
@@ -27,6 +29,7 @@ export function Header() {
     { label: t('nav.about'), path: '/about' },
     { label: t('nav.projects'), path: '/projects' },
     { label: t('nav.partners'), path: '/partners' },
+    { label: t('nav.register'), path: '/circuit/register' },
     { label: t('nav.contact'), path: '/contact' },
     { label: t('nav.faq'), path: '/faq' }
   ];
@@ -71,6 +74,25 @@ export function Header() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-4">
+            {/* Admin Button */}
+            {isAdmin ? (
+              <Link
+                to="/admin/dashboard"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-agora-purple text-white hover:opacity-90 transition-opacity"
+              >
+                <Shield size={18} />
+                <span className="font-semibold text-sm">Admin</span>
+              </Link>
+            ) : (
+              <Link
+                to="/admin/login"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-800 transition-colors"
+              >
+                <Shield size={18} />
+                <span className="font-semibold text-sm">Admin</span>
+              </Link>
+            )}
+            
             <button
               onClick={toggleLanguage}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-agora-light hover:bg-gray-200 transition-colors"

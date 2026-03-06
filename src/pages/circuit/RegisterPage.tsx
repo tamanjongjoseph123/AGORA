@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,39 +6,92 @@ import QRCode from 'qrcode.react';
 import { Send } from 'lucide-react';
 
 const registerSchema = z.object({
-  category: z.enum(['player', 'fan', 'sponsor', 'seller'], {
+  category: z.enum(['individual', 'team', 'organization', 'other'], {
     errorMap: () => ({ message: 'Please select a category' })
   }),
-  name: z.string().min(2, 'Name is required'),
+  full_name: z.string().min(2, 'Name is required'),
   email: z.string().email('Valid email is required'),
-  phone: z.string().min(10, 'Phone number is required'),
-  team: z.string().optional()
+  phone_number: z.string().min(1, 'Phone number is required'),
+  team_name: z.string().optional(),
+  customTeam: z.string().optional()
 });
 
 type RegisterForm = z.infer<typeof registerSchema>;
 
 export function RegisterPage() {
-  const { t } = useTranslation();
   const [submitted, setSubmitted] = useState(false);
   const [registrationId, setRegistrationId] = useState<string>('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedTeam, setSelectedTeam] = useState<string>('');
   const { register, handleSubmit, formState: { errors }, reset } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema)
   });
 
-  const onSubmit = (data: RegisterForm) => {
-    const id = `AGORA-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-    setRegistrationId(id);
-    console.log('Registration Data:', { ...data, registrationId: id });
+  const teams = [
+    'IME',
+    'Polytech',
+    'Fomic',
+    'IUT',
+    'SIU',
+    'Rousseau',
+    'CIUB',
+    'AIMT',
+    'St. Bernard',
+    'JFN',
+    'Universite des valeurs et de la mentalite',
+    'luget',
+    'Saint Jerome',
+    'Keyce',
+    'luc',
+    'De la salle',
+    'The brains',
+    'UCAC icam',
+    'Other'
+  ];
+
+  const categories = [
+    { value: 'individual', label: 'Individual' },
+    { value: 'team', label: 'Team' },
+    { value: 'organization', label: 'Organization' },
+    { value: 'other', label: 'Other' }
+  ];
+
+  const onSubmit = async (data: RegisterForm) => {
+    console.log('Form submitted with data:', data);
     
-    // Store in localStorage for demo
-    const registrations = JSON.parse(localStorage.getItem('agoraRegistrations') || '[]');
-    registrations.push({ ...data, registrationId: id, date: new Date().toISOString() });
-    localStorage.setItem('agoraRegistrations', JSON.stringify(registrations));
-    
-    setSubmitted(true);
-    reset();
-    setTimeout(() => setSubmitted(false), 5000);
+    try {
+      console.log('Sending request to API...');
+      const response = await fetch('http://127.0.0.1:8000/api/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          category: data.category,
+          full_name: data.full_name,
+          email: data.email,
+          phone_number: data.phone_number,
+          team_name: data.team_name || data.customTeam
+        }),
+      });
+
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error(errorData.detail || 'Registration failed');
+      }
+
+      const result = await response.json();
+      console.log('API Success:', result);
+      setRegistrationId(result.id || `AGORA-${Date.now()}`);
+      setSubmitted(true);
+      reset();
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('Registration failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
   };
 
   return (
@@ -47,7 +99,7 @@ export function RegisterPage() {
       {/* Page Header */}
       <section className="bg-gradient-to-r from-agora-purple to-agora-orange text-white section-padding">
         <div className="container-base text-center">
-          <h1 className="text-5xl font-bold mb-4">{t('circuit.registration_title')}</h1>
+          <h1 className="text-5xl font-bold mb-4">Event Registration</h1>
           <p className="text-xl opacity-90">Join the competition and register today</p>
         </div>
       </section>
@@ -59,7 +111,7 @@ export function RegisterPage() {
             {/* QR Code Section */}
             <div className="card-base p-8 flex flex-col items-center justify-center">
               <h2 className="text-2xl font-bold mb-6 text-center gradient-text">
-                {t('circuit.registration_qr')}
+                Register via QR Code
               </h2>
               <div className="bg-white p-6 rounded-lg border-4 border-agora-light mb-6">
                 <QRCode
@@ -77,14 +129,14 @@ export function RegisterPage() {
             {/* Registration Form */}
             <div>
               <h2 className="text-2xl font-bold mb-6 gradient-text">
-                {t('circuit.registration_manual')}
+                Manual Registration
               </h2>
 
               {submitted && (
                 <div className="bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg mb-6">
-                  <p className="font-bold">{t('circuit.success')}</p>
+                  <p className="font-bold">Registration Successful!</p>
                   <p className="text-sm mt-2">
-                    {t('circuit.success_message')}: <span className="font-bold">{registrationId}</span>
+                    Your registration has been submitted successfully: <span className="font-bold">{registrationId}</span>
                   </p>
                 </div>
               )}
@@ -93,21 +145,15 @@ export function RegisterPage() {
                 {/* Category Selection */}
                 <div>
                   <label className="block text-sm font-semibold mb-3 text-gray-700">
-                    {t('circuit.category')}
+                    Registration Category
                   </label>
                   <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { value: 'player', label: t('circuit.category_player') },
-                      { value: 'fan', label: t('circuit.category_fan') },
-                      { value: 'sponsor', label: t('circuit.category_sponsor') },
-                      { value: 'seller', label: t('circuit.category_seller') }
-                    ].map((cat) => (
+                    {categories.map((cat) => (
                       <label key={cat.value} className="flex items-center cursor-pointer">
                         <input
                           {...register('category')}
                           type="radio"
                           value={cat.value}
-                          onChange={(e) => setSelectedCategory(e.target.value)}
                           className="w-4 h-4"
                         />
                         <span className="ml-2 text-sm font-medium text-gray-700">{cat.label}</span>
@@ -119,26 +165,26 @@ export function RegisterPage() {
                   )}
                 </div>
 
-                {/* Name */}
+                {/* Full Name */}
                 <div>
                   <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    {t('circuit.name')}
+                    Full Name
                   </label>
                   <input
-                    {...register('name')}
+                    {...register('full_name')}
                     type="text"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agora-purple"
-                    placeholder="Full name"
+                    placeholder="Enter your full name"
                   />
-                  {errors.name && (
-                    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                  {errors.full_name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.full_name.message}</p>
                   )}
                 </div>
 
                 {/* Email */}
                 <div>
                   <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    {t('circuit.email')}
+                    Email Address
                   </label>
                   <input
                     {...register('email')}
@@ -151,40 +197,59 @@ export function RegisterPage() {
                   )}
                 </div>
 
-                {/* Phone */}
+                {/* Phone Number */}
                 <div>
                   <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    {t('circuit.phone')}
+                    Phone Number
                   </label>
                   <input
-                    {...register('phone')}
+                    {...register('phone_number')}
                     type="tel"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agora-purple"
-                    placeholder="+1 (234) 567-890"
+                    placeholder="+237 694 895 224"
                   />
-                  {errors.phone && (
-                    <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+                  {errors.phone_number && (
+                    <p className="text-red-500 text-sm mt-1">{errors.phone_number.message}</p>
                   )}
                 </div>
 
-                {/* Team (optional, for players) */}
-                {selectedCategory === 'player' && (
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">
-                      {t('circuit.team')}
-                    </label>
-                    <input
-                      {...register('team')}
-                      type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agora-purple"
-                      placeholder="Your team name"
-                    />
-                  </div>
-                )}
+                {/* Team Selection */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-gray-700">
+                    Team/School
+                  </label>
+                  <select
+                    {...register('team_name')}
+                    onChange={(e) => setSelectedTeam(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agora-purple"
+                  >
+                    <option value="">Select your team/school</option>
+                    {teams.map((team) => (
+                      <option key={team} value={team}>
+                        {team}
+                      </option>
+                    ))}
+                  </select>
+                  
+                  {/* Custom team input for "Other" option */}
+                  {selectedTeam === 'Other' && (
+                    <div className="mt-3">
+                      <label className="block text-sm font-semibold mb-2 text-gray-700">
+                        Enter your school name
+                      </label>
+                      <input
+                        {...register('customTeam')}
+                        type="text"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agora-purple"
+                        placeholder="Enter your school name"
+                      />
+                    </div>
+                  )}
+                </div>
 
                 <button type="submit" className="btn-primary w-full flex items-center justify-center gap-2">
                   <Send size={20} />
-                  {t('circuit.submit')}
+                  Submit Registration
                 </button>
               </form>
             </div>
