@@ -13,7 +13,7 @@ const registerSchema = z.object({
   full_name: z.string().min(2, 'Name is required'),
   email: z.string().email('Valid email is required'),
   phone_number: z.string().min(1, 'Phone number is required'),
-  team_name: z.string().optional(),
+  team_name: z.string().min(1, 'Team/School selection is required'),
   customTeam: z.string().optional()
 });
 
@@ -24,6 +24,7 @@ export function RegisterPage() {
   const [registrationId, setRegistrationId] = useState<string>('');
   const [selectedTeam, setSelectedTeam] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string>('');
   const { register, handleSubmit, formState: { errors }, reset } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema)
   });
@@ -59,6 +60,7 @@ export function RegisterPage() {
 
   const onSubmit = async (data: RegisterForm) => {
     console.log('Form submitted with data:', data);
+    setApiError(''); // Clear previous errors
     
     try {
       setIsLoading(true);
@@ -82,7 +84,20 @@ export function RegisterPage() {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('API Error:', errorData);
-        throw new Error(errorData.detail || 'Registration failed');
+        
+        // Show detailed error to user
+        let errorMessage = 'Registration failed';
+        if (errorData.detail) {
+          errorMessage = errorData.detail;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        } else if (typeof errorData === 'string') {
+          errorMessage = errorData;
+        } else {
+          errorMessage = JSON.stringify(errorData);
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
@@ -93,7 +108,8 @@ export function RegisterPage() {
       setTimeout(() => setSubmitted(false), 5000);
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Registration failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setApiError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -143,6 +159,14 @@ export function RegisterPage() {
                   <p className="text-sm mt-2">
                     Your registration has been submitted successfully: <span className="font-bold">{registrationId}</span>
                   </p>
+                </div>
+              )}
+
+              {/* Form Validation Errors */}
+              {apiError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                  <p className="font-semibold">Registration Error</p>
+                  <p className="text-sm">{apiError}</p>
                 </div>
               )}
 
@@ -226,9 +250,11 @@ export function RegisterPage() {
                   <select
                     {...register('team_name')}
                     onChange={(e) => setSelectedTeam(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agora-purple"
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-agora-purple ${
+                      errors.team_name ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   >
-                    <option value="">Select your team/school</option>
+                    <option value="">Select your team/school *</option>
                     {teams.map((team) => (
                       <option key={team} value={team}>
                         {team}
@@ -245,10 +271,18 @@ export function RegisterPage() {
                       <input
                         {...register('customTeam')}
                         type="text"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agora-purple"
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-agora-purple ${
+                          errors.customTeam ? 'border-red-300' : 'border-gray-300'
+                        }`}
                         placeholder="Enter your school name"
                       />
+                      {errors.customTeam && (
+                        <p className="text-red-500 text-sm mt-1">{errors.customTeam.message}</p>
+                      )}
                     </div>
+                  )}
+                  {errors.team_name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.team_name.message}</p>
                   )}
                 </div>
 
