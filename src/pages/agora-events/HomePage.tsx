@@ -15,7 +15,7 @@ export function HomePage() {
           <div className="animate-fadeInUp max-w-6xl mx-auto">
             <div className="relative mb-6">
               <img
-                src="/images/AGORA LOGO.jpeg"
+                src="/AGORA LOGO.jpeg"
                 alt="AGORA Logo"
                 className="h-48 w-auto mx-auto animate-logo-float"
               />

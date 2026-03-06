@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Settings, LogOut, Mail, Phone, Users } from 'lucide-react';
+import { BASE_URL } from '../../config/api';
 
 interface Registration {
   id: number;
@@ -27,7 +28,7 @@ export function AdminDashboardPage() {
   const loadRegistrations = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://127.0.0.1:8000/api/register/');
+      const response = await fetch(`${BASE_URL}api/register/`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch registrations');

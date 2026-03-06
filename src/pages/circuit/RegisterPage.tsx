@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import QRCode from 'qrcode.react';
 import { Send } from 'lucide-react';
+import { BASE_URL } from '../../config/api';
 
 const registerSchema = z.object({
   category: z.enum(['individual', 'team', 'organization', 'other'], {
@@ -22,6 +23,7 @@ export function RegisterPage() {
   const [submitted, setSubmitted] = useState(false);
   const [registrationId, setRegistrationId] = useState<string>('');
   const [selectedTeam, setSelectedTeam] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit, formState: { errors }, reset } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema)
   });
@@ -59,8 +61,9 @@ export function RegisterPage() {
     console.log('Form submitted with data:', data);
     
     try {
+      setIsLoading(true);
       console.log('Sending request to API...');
-      const response = await fetch('http://127.0.0.1:8000/api/register/', {
+      const response = await fetch(`${BASE_URL}api/register/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,6 +94,8 @@ export function RegisterPage() {
     } catch (error) {
       console.error('Registration error:', error);
       alert('Registration failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -247,9 +252,18 @@ export function RegisterPage() {
                   )}
                 </div>
 
-                <button type="submit" className="btn-primary w-full flex items-center justify-center gap-2">
-                  <Send size={20} />
-                  Submit Registration
+                <button type="submit" disabled={isLoading} className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                  {isLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <Send size={20} />
+                      Submit Registration
+                    </>
+                  )}
                 </button>
               </form>
             </div>
