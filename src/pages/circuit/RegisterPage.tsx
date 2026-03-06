@@ -7,7 +7,7 @@ import { Send } from 'lucide-react';
 import { BASE_URL } from '../../config/api';
 
 const registerSchema = z.object({
-  category: z.enum(['individual', 'team', 'organization', 'other'], {
+  category: z.enum(['player', 'fan', 'sponsor', 'seller'], {
     errorMap: () => ({ message: 'Please select a category' })
   }),
   full_name: z.string().min(2, 'Name is required'),
@@ -51,10 +51,10 @@ export function RegisterPage() {
   ];
 
   const categories = [
-    { value: 'individual', label: 'Individual' },
-    { value: 'team', label: 'Team' },
-    { value: 'organization', label: 'Organization' },
-    { value: 'other', label: 'Other' }
+    { value: 'player', label: 'Player' },
+    { value: 'fan', label: 'Fan' },
+    { value: 'sponsor', label: 'Sponsor' },
+    { value: 'seller', label: 'Seller' }
   ];
 
   const onSubmit = async (data: RegisterForm) => {

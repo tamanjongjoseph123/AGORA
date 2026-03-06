@@ -184,9 +184,9 @@ export function AdminDashboardPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          reg.category === 'individual' ? 'bg-blue-100 text-blue-800' :
-                          reg.category === 'team' ? 'bg-green-100 text-green-800' :
-                          reg.category === 'organization' ? 'bg-yellow-100 text-yellow-800' :
+                          reg.category === 'player' ? 'bg-blue-100 text-blue-800' :
+                          reg.category === 'fan' ? 'bg-green-100 text-green-800' :
+                          reg.category === 'sponsor' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-purple-100 text-purple-800'
                         }`}>
                           {reg.category.charAt(0).toUpperCase() + reg.category.slice(1)}
