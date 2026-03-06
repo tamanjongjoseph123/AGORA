@@ -11,6 +11,7 @@ interface Registration {
   email: string;
   phone_number: string;
   team_name?: string;
+  customTeam?: string;
   created_at: string;
 }
 
@@ -35,6 +36,8 @@ export function AdminDashboardPage() {
       }
       
       const data = await response.json();
+      console.log('API Response Data:', data); // Debug: Log the actual response
+      console.log('Sample registration:', data[0]); // Debug: Log first registration
       setRegistrations(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -49,7 +52,26 @@ export function AdminDashboardPage() {
     navigate('/');
   };
 
+  const handleRefresh = () => {
+    loadRegistrations();
+  };
+
   const getTeamDisplay = (registration: Registration) => {
+    console.log('=== FULL REGISTRATION OBJECT ===', registration); // Debug: Log entire registration object
+    console.log('team_name value:', registration.team_name); // Debug: Log team_name field
+    console.log('customTeam value:', registration.customTeam); // Debug: Log customTeam field
+    console.log('team object:', registration.team); // Debug: Log team object
+    console.log('typeof registration.team:', typeof registration.team); // Debug: Check team object type
+    
+    // First check for team object (preferred)
+    if (registration.team?.name) {
+      return registration.team.name;
+    }
+    // Fallback to team_name field (for when team object is null)
+    if (registration.team_name === 'Other' && registration.customTeam) {
+      return registration.customTeam;
+    }
+    // Final fallback to team_name field
     return registration.team_name || 'N/A';
   };
 
@@ -86,7 +108,7 @@ export function AdminDashboardPage() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <div className="p-2 bg-agora-purple rounded-lg">
                 <Settings size={24} className="text-white" />
               </div>
@@ -97,10 +119,18 @@ export function AdminDashboardPage() {
             </div>
             <div className="flex items-center gap-4">
               <button
+                onClick={handleRefresh}
+                className="flex items-center gap-2 px-4 py-2 bg-agora-purple text-white rounded-lg hover:opacity-90"
+                title="Refresh data"
+              >
+                <Settings size={20} />
+                Refresh
+              </button>
+              <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
-                <LogOut size={18} />
+                <LogOut size={20} />
                 Logout
               </button>
             </div>

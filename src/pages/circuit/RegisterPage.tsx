@@ -60,6 +60,7 @@ export function RegisterPage() {
 
   const onSubmit = async (data: RegisterForm) => {
     console.log('Form submitted with data:', data);
+    console.log('selectedTeam state:', selectedTeam); // Debug: Check selected team state
     setApiError(''); // Clear previous errors
     
     try {
@@ -75,7 +76,7 @@ export function RegisterPage() {
           full_name: data.full_name,
           email: data.email,
           phone_number: data.phone_number,
-          team_name: data.team_name || data.customTeam
+          team_name: data.team_name === 'Other' ? data.customTeam : data.team_name
         }),
       });
 
